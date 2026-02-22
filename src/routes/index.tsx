@@ -3,7 +3,7 @@ import { PublicLayout } from '@/components/layout/public-layout'
 import { DashboardLayout } from '@/components/layout/dashboard-layout'
 
 // Lazy load pages for code splitting
-import { LandingPage } from '@/pages/landing'
+import { LandingPage, LandingErrorState } from '@/pages/landing'
 import { LoginPage } from '@/pages/auth/login'
 import { SignupPage } from '@/pages/auth/signup'
 import { PasswordResetPage } from '@/pages/auth/password-reset'
@@ -29,7 +29,11 @@ export const router = createBrowserRouter([
     path: '/',
     element: <PublicLayout />,
     children: [
-      { index: true, element: <LandingPage /> },
+      {
+        index: true,
+        element: <LandingPage />,
+        errorElement: <LandingErrorState onRetry={() => window.location.reload()} />,
+      },
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
       { path: 'password-reset', element: <PasswordResetPage /> },
