@@ -9,6 +9,7 @@ import {
   User,
   ChevronLeft,
   ChevronRight,
+  Shield,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -20,6 +21,7 @@ const navItems = [
   { to: '/dashboard/sessions', icon: MessageSquare, label: 'Sessions' },
   { to: '/dashboard/integrations', icon: Webhook, label: 'Integrations' },
   { to: '/dashboard/content', icon: FileText, label: 'Content' },
+  { to: '/dashboard/admin', icon: Shield, label: 'Admin' },
   { to: '/dashboard/settings', icon: Settings, label: 'Settings' },
 ]
 

@@ -18,6 +18,7 @@ import { IntegrationsPage } from '@/pages/dashboard/integrations'
 import { ContentPage } from '@/pages/dashboard/content'
 import { SettingsPage } from '@/pages/dashboard/settings'
 import { ProfilePage } from '@/pages/dashboard/profile'
+import { AdminDashboardPage } from '@/pages/dashboard/admin'
 import { UserProfilePage } from '@/pages/UserProfile'
 import { PublicChatPage } from '@/pages/chat'
 import { AgentPublicChatVisitorViewPage } from '@/pages/AgentPublicChatVisitorView'
@@ -63,6 +64,7 @@ export const router = createBrowserRouter([
       { path: 'content', element: <ContentPage /> },
       { path: 'settings', element: <SettingsPage /> },
       { path: 'profile', element: <ProfilePage /> },
+      { path: 'admin', element: <AdminDashboardPage /> },
       { path: 'user-profile', element: <UserProfilePage /> },
     ],
   },
