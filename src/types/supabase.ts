@@ -11,7 +11,9 @@ export interface AgentPublicChatVisitorViewRow {
   user_id: string
   title: string
   description: string | null
+  slug: string | null
   status: string
+  config: Record<string, unknown> | null
   created_at: string
   updated_at: string
 }
