@@ -27,9 +27,32 @@ export interface SessionsRow {
   updated_at: string
 }
 
+export interface ContentSourcesRow {
+  id: string
+  user_id: string
+  agent_id: string | null
+  name: string
+  type: 'url' | 'file' | 'text'
+  status: 'pending' | 'processing' | 'ready' | 'error'
+  url: string | null
+  file_path: string | null
+  last_updated: string
+  created_at: string
+  metadata: Record<string, unknown> | null
+}
+
 export interface Database {
   public: {
     Tables: {
+      content_sources: {
+        Row: ContentSourcesRow
+        Insert: Omit<ContentSourcesRow, 'id' | 'last_updated' | 'created_at'> & {
+          id?: string
+          last_updated?: string
+          created_at?: string
+        }
+        Update: Partial<ContentSourcesRow>
+      }
       agent_public_chat_visitor_view: {
         Row: AgentPublicChatVisitorViewRow
         Insert: Omit<AgentPublicChatVisitorViewRow, 'id' | 'created_at' | 'updated_at'> & {
