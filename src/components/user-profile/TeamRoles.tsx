@@ -6,6 +6,14 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -184,58 +192,130 @@ export function TeamRoles({
             </Button>
           </div>
         ) : (
-          <div className="space-y-4">
-            {teamMembers.map((member) => {
-              const RoleIcon = getRoleIcon(member.role)
-              return (
-                <div
-                  key={member.id}
-                  className="flex items-center justify-between rounded-lg border border-border p-4"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                      <RoleIcon className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium">{member.name ?? member.email}</p>
-                        <Badge variant={member.status === 'pending' ? 'secondary' : 'default'}>
-                          {member.status}
-                        </Badge>
+          <>
+            {/* Mobile: cards */}
+            <div className="mt-4 space-y-4 md:hidden">
+              {teamMembers.map((member) => {
+                const RoleIcon = getRoleIcon(member.role)
+                return (
+                  <div
+                    key={member.id}
+                    className="flex flex-col gap-3 rounded-lg border border-border p-4"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted">
+                          <RoleIcon className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium">{member.name ?? member.email}</p>
+                            <Badge variant={member.status === 'pending' ? 'secondary' : 'default'}>
+                              {member.status}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">{member.email}</p>
+                        </div>
                       </div>
-                      <p className="text-sm text-muted-foreground">{member.email}</p>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" aria-label="More options">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {ROLE_OPTIONS.filter((r) => r.value !== member.role).map((opt) => (
+                            <DropdownMenuItem
+                              key={opt.value}
+                              onClick={() => onUpdateRole?.(member.id, opt.value)}
+                            >
+                              Change to {opt.label}
+                            </DropdownMenuItem>
+                          ))}
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => onRemove?.(member.id)}
+                          >
+                            Remove from team
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
-                    <Badge variant="outline" className="capitalize">
+                    <Badge variant="outline" className="w-fit capitalize">
                       {member.role}
                     </Badge>
                   </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" aria-label="More options">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {ROLE_OPTIONS.filter((r) => r.value !== member.role).map((opt) => (
-                        <DropdownMenuItem
-                          key={opt.value}
-                          onClick={() => onUpdateRole?.(member.id, opt.value)}
-                        >
-                          Change to {opt.label}
-                        </DropdownMenuItem>
-                      ))}
-                      <DropdownMenuItem
-                        className="text-destructive"
-                        onClick={() => onRemove?.(member.id)}
-                      >
-                        Remove from team
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              )
-            })}
-          </div>
+                )
+              })}
+            </div>
+            {/* Desktop: table */}
+            <div className="mt-4 hidden md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Member</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="w-[80px]">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {teamMembers.map((member) => {
+                    const RoleIcon = getRoleIcon(member.role)
+                    return (
+                      <TableRow key={member.id}>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted">
+                              <RoleIcon className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                            <span className="font-medium">{member.name ?? member.email}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">{member.email}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="capitalize">
+                            {member.role}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={member.status === 'pending' ? 'secondary' : 'default'}>
+                            {member.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" aria-label="More options">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              {ROLE_OPTIONS.filter((r) => r.value !== member.role).map((opt) => (
+                                <DropdownMenuItem
+                                  key={opt.value}
+                                  onClick={() => onUpdateRole?.(member.id, opt.value)}
+                                >
+                                  Change to {opt.label}
+                                </DropdownMenuItem>
+                              ))}
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => onRemove?.(member.id)}
+                              >
+                                Remove from team
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          </>
         )}
       </CardContent>
     </Card>

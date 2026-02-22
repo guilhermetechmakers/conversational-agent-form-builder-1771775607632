@@ -66,6 +66,10 @@ export const router = createBrowserRouter([
       { path: 'user-profile', element: <UserProfilePage /> },
     ],
   },
+  {
+    path: '/user-profile',
+    element: <Navigate to="/dashboard/user-profile" replace />,
+  },
   { path: '/404', element: <NotFoundPage /> },
   { path: '*', element: <Navigate to="/404" replace /> },
 ])

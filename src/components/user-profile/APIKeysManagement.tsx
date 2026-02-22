@@ -6,6 +6,14 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -224,41 +232,100 @@ export function APIKeysManagement({
             </Button>
           </div>
         ) : (
-          <div className="space-y-4">
-            {keys.map((apiKey) => (
-              <div
-                key={apiKey.id}
-                className="flex flex-col gap-4 rounded-lg border border-border p-4 sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div className="flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="font-medium">{apiKey.name}</p>
+          <>
+            {/* Mobile: cards */}
+            <div className="mt-4 space-y-4 md:hidden">
+              {keys.map((apiKey) => (
+                <div
+                  key={apiKey.id}
+                  className="flex flex-col gap-3 rounded-lg border border-border p-4"
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="font-medium">{apiKey.name}</p>
+                      <p className="mt-1 font-mono text-sm text-muted-foreground">
+                        {apiKey.prefix}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-destructive hover:bg-destructive/10 hover:text-destructive shrink-0"
+                      onClick={() => setRevokeKeyId(apiKey.id)}
+                      aria-label="Revoke key"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
                     {apiKey.scopes.map((scope) => (
                       <Badge key={scope} variant="secondary" className="text-xs">
                         {scope}
                       </Badge>
                     ))}
                   </div>
-                  <p className="mt-1 font-mono text-sm text-muted-foreground">{apiKey.prefix}</p>
-                  <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <BarChart3 className="h-4 w-4" />
                     {apiKey.last_used_at
                       ? `Last used ${new Date(apiKey.last_used_at).toLocaleDateString()}`
                       : 'Never used'}
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                  onClick={() => setRevokeKeyId(apiKey.id)}
-                  aria-label="Revoke key"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+            {/* Desktop: table */}
+            <div className="mt-4 hidden md:block">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Key</TableHead>
+                    <TableHead>Scopes</TableHead>
+                    <TableHead>Usage</TableHead>
+                    <TableHead className="w-[80px]">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {keys.map((apiKey) => (
+                    <TableRow key={apiKey.id}>
+                      <TableCell className="font-medium">{apiKey.name}</TableCell>
+                      <TableCell className="font-mono text-sm text-muted-foreground">
+                        {apiKey.prefix}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {apiKey.scopes.map((scope) => (
+                            <Badge key={scope} variant="secondary" className="text-xs">
+                              {scope}
+                            </Badge>
+                          ))}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <BarChart3 className="h-4 w-4" />
+                          {apiKey.last_used_at
+                            ? `Last used ${new Date(apiKey.last_used_at).toLocaleDateString()}`
+                            : 'Never used'}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          onClick={() => setRevokeKeyId(apiKey.id)}
+                          aria-label="Revoke key"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </>
         )}
 
         <AlertDialog open={!!revokeKeyId} onOpenChange={() => setRevokeKeyId(null)}>

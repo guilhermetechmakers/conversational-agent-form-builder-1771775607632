@@ -124,30 +124,50 @@ export function ProfileInfo({ profile, isLoading, onSave, onAvatarUpload }: Prof
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
-            <div className="relative group">
-              <Avatar className="h-20 w-20">
-                <AvatarImage src={profile?.avatar_url} alt={profile?.name} />
-                <AvatarFallback className="text-xl">
-                  {profile?.name?.slice(0, 2).toUpperCase() ?? 'U'}
-                </AvatarFallback>
-              </Avatar>
+            <div className="flex items-center gap-4">
+              <div className="relative group">
+                <Avatar className="h-16 w-16 rounded-full border-2 border-border">
+                  <AvatarImage src={profile?.avatar_url} alt={profile?.name} />
+                  <AvatarFallback className="text-xl">
+                    {profile?.name?.slice(0, 2).toUpperCase() ?? 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <label
+                  htmlFor="avatar-upload"
+                  className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+                >
+                  <Camera className="h-6 w-6 text-white" />
+                  <input
+                    id="avatar-upload"
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file && onAvatarUpload) onAvatarUpload(file)
+                      e.target.value = ''
+                    }}
+                  />
+                </label>
+              </div>
               <label
-                htmlFor="avatar-upload"
-                className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
+                htmlFor="avatar-upload-btn"
+                className="inline-flex cursor-pointer items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors duration-200 hover:bg-primary/90"
               >
-                <Camera className="h-6 w-6 text-white" />
-                <input
-                  id="avatar-upload"
-                  type="file"
-                  accept="image/*"
-                  className="sr-only"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0]
-                    if (file && onAvatarUpload) onAvatarUpload(file)
-                    e.target.value = ''
-                  }}
-                />
+                <Camera className="mr-2 h-4 w-4" />
+                Upload
               </label>
+              <input
+                id="avatar-upload-btn"
+                type="file"
+                accept="image/*"
+                className="sr-only"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file && onAvatarUpload) onAvatarUpload(file)
+                  e.target.value = ''
+                }}
+              />
             </div>
             <div className="flex-1 space-y-4">
               <div className="space-y-2">

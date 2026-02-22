@@ -9,6 +9,14 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import type { ActiveSession } from '@/types/user-profile'
 
@@ -196,45 +204,99 @@ export function PasswordSecurity({
                 </p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {sessions.map((session) => {
-                  const Icon = getSessionIcon(session.device)
-                  return (
-                    <div
-                      key={session.id}
-                      className="flex items-center justify-between rounded-lg border border-border p-4"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-                          <Icon className="h-5 w-5 text-muted-foreground" />
+              <>
+                {/* Mobile: cards */}
+                <div className="mt-4 space-y-4 md:hidden">
+                  {sessions.map((session) => {
+                    const Icon = getSessionIcon(session.device)
+                    return (
+                      <div
+                        key={session.id}
+                        className="flex items-center justify-between rounded-lg border border-border p-4"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+                            <Icon className="h-5 w-5 text-muted-foreground" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{session.device}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {session.location ?? 'Unknown'} ·{' '}
+                              {new Date(session.last_active).toLocaleDateString()}
+                            </p>
+                            {session.current && (
+                              <span className="text-xs text-primary">Current session</span>
+                            )}
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium">{session.device}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {session.location ?? 'Unknown location'} · Last active{' '}
-                            {new Date(session.last_active).toLocaleDateString()}
-                          </p>
-                        </div>
-                        {session.current && (
-                          <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                            Current
-                          </span>
+                        {!session.current && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => onRevokeSession?.(session.id)}
+                            aria-label="Revoke session"
+                          >
+                            <LogOut className="h-4 w-4" />
+                          </Button>
                         )}
                       </div>
-                      {!session.current && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => onRevokeSession?.(session.id)}
-                          aria-label="Revoke session"
-                        >
-                          <LogOut className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
+                    )
+                  })}
+                </div>
+                {/* Desktop: table */}
+                <div className="mt-4 hidden md:block">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Device</TableHead>
+                        <TableHead>Location</TableHead>
+                        <TableHead>Last active</TableHead>
+                        <TableHead className="w-[80px]">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {sessions.map((session) => {
+                        const Icon = getSessionIcon(session.device)
+                        return (
+                          <TableRow key={session.id}>
+                            <TableCell>
+                              <div className="flex items-center gap-3">
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+                                  <Icon className="h-5 w-5 text-muted-foreground" />
+                                </div>
+                                <div className="flex flex-col gap-0.5">
+                                  <span className="font-medium">{session.device}</span>
+                                  {session.current && (
+                                    <span className="text-xs text-primary">Current session</span>
+                                  )}
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-muted-foreground">
+                              {session.location ?? 'Unknown'}
+                            </TableCell>
+                            <TableCell className="text-muted-foreground">
+                              {new Date(session.last_active).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell>
+                              {!session.current && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => onRevokeSession?.(session.id)}
+                                  aria-label="Revoke session"
+                                >
+                                  <LogOut className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        )
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             )}
           </TabsContent>
         </Tabs>

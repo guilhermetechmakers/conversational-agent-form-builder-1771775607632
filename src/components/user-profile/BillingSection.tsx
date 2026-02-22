@@ -68,7 +68,11 @@ export function BillingSection({
                   ${current.price}/{current.interval}
                 </p>
               </div>
-              <Button variant="outline" size="sm" asChild>
+              <Button
+                size="sm"
+                className="bg-accent text-accent-foreground hover:bg-accent/90"
+                asChild
+              >
                 <a href="/pricing">Change plan</a>
               </Button>
             </div>
@@ -112,8 +116,7 @@ export function BillingSection({
                   </ul>
                   {!isCurrent && (
                     <Button
-                      className="w-full"
-                      variant={plan.id === 'enterprise' ? 'default' : 'outline'}
+                      className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
                       onClick={() => onUpgrade?.(plan.id)}
                     >
                       {plan.price === 0 ? 'Downgrade' : 'Upgrade'}
