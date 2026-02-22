@@ -7,6 +7,7 @@ import { LandingPage, LandingErrorState } from '@/pages/landing'
 import { LoginPage } from '@/pages/auth/login'
 import { SignupPage } from '@/pages/auth/signup'
 import { PasswordResetPage } from '@/pages/auth/password-reset'
+import { PasswordResetConfirmPage } from '@/pages/auth/password-reset-confirm'
 import { EmailVerificationPage } from '@/pages/auth/email-verification'
 import { DashboardPage } from '@/pages/dashboard'
 import { AgentsPage } from '@/pages/dashboard/agents'
@@ -37,6 +38,7 @@ export const router = createBrowserRouter([
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
       { path: 'password-reset', element: <PasswordResetPage /> },
+      { path: 'password-reset/confirm', element: <PasswordResetConfirmPage /> },
       { path: 'verify-email', element: <EmailVerificationPage /> },
       { path: 'pricing', element: <PricingPage /> },
       { path: 'about', element: <AboutPage /> },
