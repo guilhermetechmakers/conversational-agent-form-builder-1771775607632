@@ -107,7 +107,8 @@ export function SignupPage() {
           navigate('/dashboard', { replace: true })
         } else {
           toast.success('Check your email to verify your account')
-          navigate('/verify-email', { replace: true })
+          sessionStorage.setItem('verify-email-pending', data.email)
+          navigate('/verify-email', { replace: true, state: { email: data.email } })
         }
       }
     } catch (err) {
