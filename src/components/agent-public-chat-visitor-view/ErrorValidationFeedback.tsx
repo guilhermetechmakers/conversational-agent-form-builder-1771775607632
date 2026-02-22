@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils'
-import { AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 interface ErrorValidationFeedbackProps {
@@ -19,27 +18,21 @@ export function ErrorValidationFeedback({
     <div
       role="alert"
       className={cn(
-        'flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 animate-in',
+        'bg-red-100 text-red-600 p-2 rounded-lg animate-in',
         className
       )}
     >
-      <AlertCircle className="h-5 w-5 shrink-0 text-destructive" />
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-destructive">{message}</p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Please check your input and try again.
-        </p>
-        {onRetry && (
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-3 border-destructive/50 text-destructive hover:bg-destructive/10"
-            onClick={onRetry}
-          >
-            {retryLabel}
-          </Button>
-        )}
-      </div>
+      <p className="text-sm font-medium">{message}</p>
+      {onRetry && (
+        <Button
+          type="button"
+          size="sm"
+          className="mt-2 bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 transition ease-in-out duration-150"
+          onClick={onRetry}
+        >
+          {retryLabel}
+        </Button>
+      )}
     </div>
   )
 }

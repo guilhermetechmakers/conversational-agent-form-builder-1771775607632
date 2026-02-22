@@ -46,25 +46,20 @@ export function InputArea({
   }
 
   return (
-    <div className={cn('border-t border-border bg-card/50 backdrop-blur-sm p-4', className)}>
-      {quickReplies.length > 0 && (
-        <div className="mb-3 flex flex-wrap gap-2">
-          {quickReplies.map((reply) => (
-            <Button
-              key={reply}
-              type="button"
-              variant="outline"
-              size="sm"
-              className="transition-all duration-200 hover:scale-[1.02]"
-              onClick={() => handleQuickReply(reply)}
-              disabled={disabled}
-            >
-              {reply}
-            </Button>
-          ))}
-        </div>
+    <div
+      className={cn(
+        'flex flex-col items-stretch bg-gray-100 p-2 border-t transition ease-in-out duration-150',
+        className
       )}
-      <form onSubmit={handleSubmit} className="flex gap-2">
+    >
+      <form onSubmit={handleSubmit} className="flex items-center gap-2">
+        <Input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          placeholder={placeholder}
+          disabled={disabled}
+          className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition ease-in-out duration-150"
+        />
         {supportsFileUpload && (
           <>
             <input
@@ -81,18 +76,12 @@ export function InputArea({
               onClick={() => fileInputRef.current?.click()}
               disabled={disabled}
               aria-label="Upload file"
+              className="ml-2"
             >
               <Paperclip className="h-4 w-4" />
             </Button>
           </>
         )}
-        <Input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder={placeholder}
-          disabled={disabled}
-          className="flex-1 transition-colors focus-visible:ring-2"
-        />
         {supportsVoice && (
           <Button
             type="button"
@@ -100,19 +89,37 @@ export function InputArea({
             size="icon"
             disabled={disabled}
             aria-label="Voice input"
+            className="ml-2"
           >
             <Mic className="h-4 w-4" />
           </Button>
         )}
         <Button
           type="submit"
-          size="icon"
+          size="sm"
           disabled={disabled || !text.trim()}
-          className="transition-all duration-200 hover:scale-[1.02] hover:shadow-elevated"
+          className="ml-2 bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition ease-in-out duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <Send className="h-4 w-4" />
         </Button>
       </form>
+      {quickReplies.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-2">
+          {quickReplies.map((reply) => (
+            <Button
+              key={reply}
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="bg-gray-200 p-2 rounded-lg hover:bg-gray-300 transition ease-in-out duration-150"
+              onClick={() => handleQuickReply(reply)}
+              disabled={disabled}
+            >
+              {reply}
+            </Button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

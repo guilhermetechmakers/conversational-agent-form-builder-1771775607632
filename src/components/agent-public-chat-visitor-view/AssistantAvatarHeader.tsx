@@ -8,36 +8,26 @@ interface AssistantAvatarHeaderProps {
 }
 
 export function AssistantAvatarHeader({ agent, className }: AssistantAvatarHeaderProps) {
-  const primaryColor = agent.brandColors?.primary ?? 'rgb(var(--primary))'
-  const accentColor = agent.brandColors?.accent ?? 'rgb(var(--accent))'
-
   return (
     <header
       className={cn(
-        'flex items-center gap-4 border-b border-l-4 border-border bg-card px-4 py-4 shadow-sm transition-all duration-300',
+        'flex items-center justify-between bg-blue-600 text-white p-4 shadow-md transition ease-in-out duration-150',
         className
       )}
-      style={{
-        borderLeftColor: primaryColor,
-      }}
     >
-      <Avatar className="h-12 w-12 border-2 border-border shadow-elevated">
-        <AvatarImage src={agent.avatar} alt={agent.name} />
-        <AvatarFallback
-          className="text-lg font-semibold"
-          style={{
-            background: `linear-gradient(135deg, ${primaryColor}, ${accentColor})`,
-            color: 'white',
-          }}
-        >
-          {agent.name.slice(0, 2).toUpperCase()}
-        </AvatarFallback>
-      </Avatar>
-      <div className="flex-1 min-w-0">
-        <h1 className="font-semibold text-lg truncate">{agent.name}</h1>
-        {agent.productHint && (
-          <p className="text-sm text-muted-foreground truncate">{agent.productHint}</p>
-        )}
+      <div className="flex items-center min-w-0">
+        <Avatar className="h-10 w-10 shrink-0 mr-2 border-2 border-white/30">
+          <AvatarImage src={agent.avatar} alt={agent.name} />
+          <AvatarFallback className="bg-blue-500 text-white text-sm font-semibold">
+            {agent.name.slice(0, 2).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        <div className="min-w-0">
+          <h1 className="font-semibold text-lg truncate">{agent.name}</h1>
+          {agent.productHint && (
+            <p className="text-sm text-gray-200 truncate">{agent.productHint}</p>
+          )}
+        </div>
       </div>
     </header>
   )

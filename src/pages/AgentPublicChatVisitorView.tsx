@@ -141,11 +141,15 @@ export function AgentPublicChatVisitorViewPage() {
 
   if (isLoading && !agent) {
     return (
-      <div className="flex min-h-screen flex-col bg-background">
-        <Skeleton className="h-16 w-full" />
-        <div className="container mx-auto flex max-w-2xl flex-1 flex-col gap-4 p-4">
-          <Skeleton className="h-64 w-full rounded-xl" />
-          <Skeleton className="h-24 w-full rounded-xl" />
+      <div className="flex flex-col min-h-[calc(100vh-4rem)] bg-gray-50">
+        <Skeleton className="h-16 w-full bg-gray-200 rounded-lg" />
+        <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
+          <div className="flex-1 p-4 space-y-4">
+            <Skeleton className="h-6 w-3/4 bg-gray-200 rounded-lg" />
+            <Skeleton className="h-6 w-1/2 bg-gray-200 rounded-lg" />
+            <Skeleton className="h-6 max-w-md bg-gray-200 rounded-lg" />
+          </div>
+          <Skeleton className="hidden md:block w-64 min-h-0 flex-1 bg-gray-200 rounded-none" />
         </div>
       </div>
     )
@@ -153,16 +157,16 @@ export function AgentPublicChatVisitorViewPage() {
 
   if (isError && !agent) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
+      <div className="flex flex-col min-h-[calc(100vh-4rem)] bg-gray-50 items-center justify-center p-4">
         <div className="max-w-md text-center">
-          <h2 className="font-semibold text-xl">Could not load agent</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <h2 className="font-semibold text-xl text-gray-600">Could not load agent</h2>
+          <p className="mt-2 text-sm text-gray-500">
             {error instanceof Error ? error.message : 'An error occurred'}
           </p>
           <button
             type="button"
             onClick={() => refetch()}
-            className="mt-4 text-sm font-medium text-primary hover:underline"
+            className="mt-4 bg-red-600 text-white p-2 rounded-lg hover:bg-red-700 transition ease-in-out duration-150"
           >
             Try again
           </button>
@@ -173,9 +177,9 @@ export function AgentPublicChatVisitorViewPage() {
 
   if (!agent) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">
-        <h2 className="font-semibold text-xl">Agent not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">This agent may have been removed.</p>
+      <div className="flex flex-col min-h-[calc(100vh-4rem)] bg-gray-50 items-center justify-center p-4">
+        <h2 className="font-semibold text-xl text-gray-600">Agent not found</h2>
+        <p className="mt-2 text-sm text-gray-500">This agent may have been removed.</p>
       </div>
     )
   }
@@ -191,11 +195,10 @@ export function AgentPublicChatVisitorViewPage() {
 
   if (useFormFallback) {
     return (
-      <div className="flex min-h-screen flex-col bg-background">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
+      <div className="flex flex-col min-h-[calc(100vh-4rem)] bg-gray-50">
         <div className="container mx-auto flex max-w-xl flex-1 flex-col gap-6 p-4 py-8">
-          <h1 className="font-bold text-2xl">Basic form</h1>
-          <p className="text-muted-foreground">
+          <h1 className="font-bold text-2xl text-gray-600">Basic form</h1>
+          <p className="text-sm text-gray-500">
             Chat is unavailable. Please fill out the form below.
           </p>
           <form onSubmit={handleFormFallbackSubmit} className="space-y-4 rounded-xl border border-border bg-card p-6 shadow-card">
@@ -240,8 +243,7 @@ export function AgentPublicChatVisitorViewPage() {
 
   if (needsConsent) {
     return (
-      <div className="flex min-h-screen flex-col bg-background">
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
+      <div className="flex flex-col min-h-[calc(100vh-4rem)] bg-gray-50">
         <div className="container mx-auto flex max-w-xl flex-1 flex-col items-center justify-center p-4">
           <ConsentPrivacyCheckbox
             consentText={agent.consentText ?? 'By continuing, you agree to our privacy policy.'}
@@ -260,17 +262,14 @@ export function AgentPublicChatVisitorViewPage() {
     : []
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
-      <div className="absolute top-0 left-1/4 h-96 w-96 -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" />
-      <div className="absolute bottom-0 right-1/4 h-80 w-80 translate-x-1/2 rounded-full bg-accent/5 blur-3xl" />
-      <div className="container mx-auto flex max-w-2xl flex-1 flex-col gap-4 p-4">
-        <div className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover">
-          <AssistantAvatarHeader agent={agent} />
+    <div className="flex flex-col min-h-[calc(100vh-4rem)] bg-gray-50">
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <AssistantAvatarHeader agent={agent} />
 
-          <div className="flex flex-1 flex-col overflow-hidden">
+        <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
+          <div className="flex flex-1 flex-col overflow-hidden min-w-0">
             {isOffline ? (
-              <div className="flex-1 p-4">
+              <div className="flex-1 flex items-center justify-center p-4 bg-white">
                 <OfflineFallback
                   onRetry={handleRetry}
                   onUseFormFallback={() => setUseFormFallback(true)}
@@ -278,34 +277,36 @@ export function AgentPublicChatVisitorViewPage() {
               </div>
             ) : (
               <>
-                <div className="flex-1 overflow-hidden">
-                  <ChatWindow
-                    messages={messages}
-                    isTyping={isTyping}
-                    agentName={agent.name}
-                    welcomeMessage={
-                      agent.productHint
-                        ? `Hi! I'm ${agent.name}. ${agent.productHint} Let's get started.`
-                        : `Hi! I'm ${agent.name}. How can I help you today?`
-                    }
-                  />
-                </div>
+                <ChatWindow
+                  messages={messages}
+                  isTyping={isTyping}
+                  agentName={agent.name}
+                  agentAvatar={agent.avatar}
+                  welcomeMessage={
+                    agent.productHint
+                      ? `Hi! I'm ${agent.name}. ${agent.productHint} Let's get started.`
+                      : `Hi! I'm ${agent.name}. How can I help you today?`
+                  }
+                />
 
-                <div className="space-y-2 border-t border-border p-4">
+                <div className="flex flex-col bg-gray-100 border-t">
                   {validationError && (
-                    <ErrorValidationFeedback
-                      message={validationError}
-                      onRetry={handleRetry}
-                    />
+                    <div className="p-2">
+                      <ErrorValidationFeedback
+                        message={validationError}
+                        onRetry={handleRetry}
+                      />
+                    </div>
                   )}
                   {fields.length > 0 && (
-                    <ProgressIndicator
-                      progress={sessionState.progress}
-                      totalSteps={fields.length}
-                      completedSteps={fields.length - sessionState.remainingFields.length}
-                    />
+                    <div className="px-4 py-2">
+                      <ProgressIndicator
+                        progress={sessionState.progress}
+                        totalSteps={fields.length}
+                        completedSteps={fields.length - sessionState.remainingFields.length}
+                      />
+                    </div>
                   )}
-                  <SessionStatePanel sessionState={sessionState} fields={fields} />
                   <SendButtonSmartPrompts
                     smartPrompts={smartPrompts}
                     onSelectPrompt={(t) => handleSend(t)}
@@ -327,7 +328,13 @@ export function AgentPublicChatVisitorViewPage() {
               </>
             )}
           </div>
+
+          <SessionStatePanel sessionState={sessionState} fields={fields} />
         </div>
+
+        <footer className="flex justify-center items-center p-2 bg-gray-100">
+          <span className="text-xs text-gray-500">Conversational Agent</span>
+        </footer>
       </div>
     </div>
   )

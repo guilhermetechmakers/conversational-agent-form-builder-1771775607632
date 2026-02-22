@@ -47,7 +47,7 @@ export function ConsentPrivacyCheckbox({
             />
             <Label
               htmlFor="consent"
-              className="cursor-pointer text-sm leading-relaxed"
+              className="cursor-pointer text-sm text-gray-600 leading-relaxed"
             >
               I agree to the above and consent to the collection of my information.
             </Label>
@@ -55,7 +55,7 @@ export function ConsentPrivacyCheckbox({
           <Button
             onClick={onAccept}
             disabled={!checked || disabled}
-            className="transition-all duration-200 hover:scale-[1.02]"
+            className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 transition ease-in-out duration-150"
           >
             Continue
           </Button>
