@@ -39,6 +39,8 @@ export const router = createBrowserRouter([
       { path: 'chat/:agentId', element: <PublicChatPage /> },
       { path: 'agent-public-chat-visitor-view', element: <AgentPublicChatVisitorViewPage /> },
       { path: 'agent-public-chat-visitor-view/:agentId', element: <AgentPublicChatVisitorViewPage /> },
+      { path: 'agent-public-chat-(visitor-view)', element: <AgentPublicChatVisitorViewPage /> },
+      { path: 'agent-public-chat-(visitor-view)/:agentId', element: <AgentPublicChatVisitorViewPage /> },
     ],
   },
   {

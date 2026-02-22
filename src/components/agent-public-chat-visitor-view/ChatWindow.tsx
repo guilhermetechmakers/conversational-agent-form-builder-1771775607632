@@ -7,6 +7,8 @@ import { Bot, User } from 'lucide-react'
 interface ChatWindowProps {
   messages: ChatMessage[]
   isTyping?: boolean
+  agentName?: string
+  welcomeMessage?: string
   className?: string
 }
 
@@ -15,7 +17,13 @@ function formatTimestamp(iso: string) {
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-export function ChatWindow({ messages, isTyping, className }: ChatWindowProps) {
+export function ChatWindow({
+  messages,
+  isTyping,
+  agentName = 'Assistant',
+  welcomeMessage = "Hi! I'm here to help. How can I assist you today?",
+  className,
+}: ChatWindowProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -25,6 +33,17 @@ export function ChatWindow({ messages, isTyping, className }: ChatWindowProps) {
   return (
     <ScrollArea className={cn('flex-1', className)}>
       <div className="flex flex-col gap-4 p-4">
+        {messages.length === 0 && (
+          <div className="flex animate-in flex-col items-center justify-center py-12 text-center">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+              <Bot className="h-7 w-7 text-primary" />
+            </div>
+            <h3 className="font-semibold text-lg">{agentName}</h3>
+            <p className="mt-2 max-w-sm text-sm text-muted-foreground leading-relaxed">
+              {welcomeMessage}
+            </p>
+          </div>
+        )}
         {messages.map((msg) => (
           <div
             key={msg.id}
@@ -47,7 +66,7 @@ export function ChatWindow({ messages, isTyping, className }: ChatWindowProps) {
             </div>
             <div
               className={cn(
-                'flex max-w-[80%] flex-col gap-1 rounded-xl px-4 py-2 shadow-card transition-all duration-200',
+                'flex max-w-[80%] flex-col gap-1 rounded-xl px-4 py-2 shadow-card transition-all duration-200 hover:shadow-elevated',
                 msg.role === 'user'
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted'

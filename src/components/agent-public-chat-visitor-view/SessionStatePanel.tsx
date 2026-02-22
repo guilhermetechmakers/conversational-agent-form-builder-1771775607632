@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { ChevronDown, ChevronUp, ClipboardList } from 'lucide-react'
-import type { SessionState } from '@/types/agent-public-chat'
+import type { FieldConfig, SessionState } from '@/types/agent-public-chat'
 
 interface SessionStatePanelProps {
   sessionState: SessionState
+  fields?: FieldConfig[]
   className?: string
 }
 
@@ -14,7 +15,12 @@ function formatValue(value: string | number | File | null): string {
   return String(value)
 }
 
-export function SessionStatePanel({ sessionState, className }: SessionStatePanelProps) {
+function getFieldLabel(key: string, fields: FieldConfig[]): string {
+  const field = fields.find((f) => f.key === key)
+  return field?.label ?? key
+}
+
+export function SessionStatePanel({ sessionState, fields = [], className }: SessionStatePanelProps) {
   const [isOpen, setIsOpen] = useState(false)
   const { collectedFields, remainingFields } = sessionState
   const hasCollected = Object.keys(collectedFields).length > 0
@@ -25,7 +31,7 @@ export function SessionStatePanel({ sessionState, className }: SessionStatePanel
   return (
     <div
       className={cn(
-        'rounded-lg border border-border bg-muted/30 transition-all duration-300',
+        'rounded-lg border border-border bg-muted/30 transition-all duration-300 hover:bg-muted/50',
         className
       )}
     >
@@ -55,7 +61,7 @@ export function SessionStatePanel({ sessionState, className }: SessionStatePanel
               <ul className="space-y-1 text-sm">
                 {Object.entries(collectedFields).map(([key, value]) => (
                   <li key={key} className="flex justify-between gap-4">
-                    <span className="text-muted-foreground">{key}</span>
+                    <span className="text-muted-foreground">{getFieldLabel(key, fields)}</span>
                     <span className="truncate font-medium">{formatValue(value)}</span>
                   </li>
                 ))}

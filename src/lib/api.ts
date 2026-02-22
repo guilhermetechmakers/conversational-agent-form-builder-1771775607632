@@ -78,3 +78,41 @@ export async function apiDelete<T>(path: string, options?: RequestInit): Promise
   })
   return handleResponse<T>(response)
 }
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+export interface ChatOrchestratorRequest {
+  action: 'get_config' | 'send_message'
+  agentId: string
+  sessionId?: string
+  message?: string
+  collectedFields?: Record<string, string | number | null>
+}
+
+export interface ChatOrchestratorResponse {
+  config?: unknown
+  assistantMessage?: string
+  updatedFields?: Record<string, string | number | null>
+  error?: string
+}
+
+export async function invokeChatOrchestrator(
+  body: ChatOrchestratorRequest
+): Promise<ChatOrchestratorResponse> {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    throw new Error('Supabase not configured')
+  }
+  const response = await fetch(
+    `${SUPABASE_URL}/functions/v1/agent-chat-orchestrator`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+      body: JSON.stringify(body),
+    }
+  )
+  return handleResponse<ChatOrchestratorResponse>(response)
+}

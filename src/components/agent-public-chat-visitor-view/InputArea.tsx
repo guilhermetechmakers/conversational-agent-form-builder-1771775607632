@@ -46,7 +46,7 @@ export function InputArea({
   }
 
   return (
-    <div className={cn('border-t border-border bg-card p-4', className)}>
+    <div className={cn('border-t border-border bg-card/50 backdrop-blur-sm p-4', className)}>
       {quickReplies.length > 0 && (
         <div className="mb-3 flex flex-wrap gap-2">
           {quickReplies.map((reply) => (

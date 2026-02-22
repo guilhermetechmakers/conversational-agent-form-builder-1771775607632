@@ -24,7 +24,7 @@ export function ConsentPrivacyCheckbox({
   return (
     <div
       className={cn(
-        'rounded-xl border border-border bg-card p-6 shadow-card transition-all duration-300',
+        'rounded-xl border border-border bg-card p-6 shadow-card transition-all duration-300 hover:shadow-card-hover',
         className
       )}
     >

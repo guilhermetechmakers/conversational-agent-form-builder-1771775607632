@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { useState, useCallback } from 'react'
+import { toast } from 'sonner'
 import {
   AssistantAvatarHeader,
   ChatWindow,
@@ -13,6 +14,7 @@ import {
 } from '@/components/agent-public-chat-visitor-view'
 import { useAgentConfig } from '@/hooks/use-agent-public-chat'
 import { Skeleton } from '@/components/ui/skeleton'
+import { invokeChatOrchestrator } from '@/lib/api'
 import type { ChatMessage, FieldConfig, SessionState } from '@/types/agent-public-chat'
 
 function buildSessionState(
@@ -49,6 +51,7 @@ export function AgentPublicChatVisitorViewPage() {
   const [useFormFallback, setUseFormFallback] = useState(false)
 
   const fields = agent?.requiredFields ?? []
+  const currentField = fields.find((f) => !collectedFields[f.key])
   const sessionState = buildSessionState(collectedFields, fields)
   const needsConsent = agent?.consentRequired && !consentAccepted
 
@@ -68,22 +71,66 @@ export function AgentPublicChatVisitorViewPage() {
 
       setIsTyping(true)
       try {
-        await new Promise((r) => setTimeout(r, 800))
-        const assistantMsg: ChatMessage = {
-          id: crypto.randomUUID(),
-          role: 'assistant',
-          content: `Thanks for sharing! I've noted "${text}". What's your email address?`,
-          timestamp: new Date().toISOString(),
+        const supabaseConfigured = !!(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY)
+        if (supabaseConfigured) {
+          const fieldsToSend: Record<string, string | number | null> = {}
+          for (const [k, v] of Object.entries(collectedFields)) {
+            if (v !== null && typeof v !== 'object') fieldsToSend[k] = v
+          }
+          if (!file && currentField) fieldsToSend[currentField.key] = text
+          const res = await invokeChatOrchestrator({
+            action: 'send_message',
+            agentId: agent.id,
+            message: text,
+            collectedFields: fieldsToSend,
+          })
+          if (res.error) throw new Error(res.error)
+          const assistantContent = res.assistantMessage ?? 'Thanks for your message. How can I help?'
+          const assistantMsg: ChatMessage = {
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            content: assistantContent,
+            timestamp: new Date().toISOString(),
+          }
+          setMessages((prev) => [...prev, assistantMsg])
+          if (res.updatedFields) {
+            setCollectedFields((prev) => ({ ...prev, ...res.updatedFields }))
+          } else if (currentField && !file) {
+            setCollectedFields((prev) => ({ ...prev, [currentField.key]: text }))
+          }
+        } else {
+          await new Promise((r) => setTimeout(r, 600))
+          const nextField = fields.find((f) => !collectedFields[f.key] && f.key !== currentField?.key)
+          const assistantContent = currentField
+            ? nextField
+              ? `Thanks! I've noted your ${currentField.label.toLowerCase()}. What's your ${nextField.label.toLowerCase()}?`
+              : `Thanks for sharing your ${currentField.label.toLowerCase()}! Is there anything else you'd like to add?`
+            : `Thanks for sharing! I've noted "${text}". ${fields[0] ? `What's your ${fields[0].label.toLowerCase()}?` : 'How can I help further?'}`
+          const assistantMsg: ChatMessage = {
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            content: assistantContent,
+            timestamp: new Date().toISOString(),
+          }
+          setMessages((prev) => [...prev, assistantMsg])
+          if (currentField && !file) {
+            setCollectedFields((prev) => ({ ...prev, [currentField.key]: text }))
+          }
         }
-        setMessages((prev) => [...prev, assistantMsg])
-        setCollectedFields((prev) => ({ ...prev, name: text }))
-      } catch {
-        setValidationError('Something went wrong. Please try again.')
+      } catch (err) {
+        const isNetworkError =
+          err instanceof TypeError ||
+          (err instanceof Error && (err.message.includes('fetch') || err.message.includes('network') || err.message.includes('Failed')))
+        if (isNetworkError) {
+          setIsOffline(true)
+        } else {
+          setValidationError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+        }
       } finally {
         setIsTyping(false)
       }
     },
-    [agent]
+    [agent, collectedFields, currentField, fields]
   )
 
   const handleRetry = useCallback(() => {
@@ -133,15 +180,25 @@ export function AgentPublicChatVisitorViewPage() {
     )
   }
 
+  const handleFormFallbackSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      toast.success('Form submitted successfully. Thank you!')
+      e.currentTarget.reset()
+    },
+    []
+  )
+
   if (useFormFallback) {
     return (
       <div className="flex min-h-screen flex-col bg-background">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
         <div className="container mx-auto flex max-w-xl flex-1 flex-col gap-6 p-4 py-8">
           <h1 className="font-bold text-2xl">Basic form</h1>
           <p className="text-muted-foreground">
             Chat is unavailable. Please fill out the form below.
           </p>
-          <form className="space-y-4 rounded-xl border border-border bg-card p-6">
+          <form onSubmit={handleFormFallbackSubmit} className="space-y-4 rounded-xl border border-border bg-card p-6 shadow-card">
             {fields.map((f) => (
               <div key={f.id} className="space-y-2">
                 <label htmlFor={f.key} className="text-sm font-medium">
@@ -150,7 +207,8 @@ export function AgentPublicChatVisitorViewPage() {
                 {f.type === 'select' ? (
                   <select
                     id={f.key}
-                    className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                    name={f.key}
+                    className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     <option value="">Select...</option>
                     {f.options?.map((o) => (
@@ -160,8 +218,9 @@ export function AgentPublicChatVisitorViewPage() {
                 ) : (
                   <input
                     id={f.key}
+                    name={f.key}
                     type={f.type}
-                    className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                    className="flex h-10 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring"
                     required={f.required}
                   />
                 )}
@@ -169,7 +228,7 @@ export function AgentPublicChatVisitorViewPage() {
             ))}
             <button
               type="submit"
-              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-all duration-200 hover:scale-[1.02] hover:bg-primary/90"
             >
               Submit
             </button>
@@ -195,7 +254,6 @@ export function AgentPublicChatVisitorViewPage() {
     )
   }
 
-  const currentField = fields.find((f) => !collectedFields[f.key])
   const quickReplies = currentField?.type === 'select' ? currentField.options ?? [] : []
   const smartPrompts = currentField
     ? [{ id: '1', text: `I'd like to share my ${currentField.label.toLowerCase()}` }]
@@ -204,8 +262,10 @@ export function AgentPublicChatVisitorViewPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <div className="absolute inset-0 -z-10 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
+      <div className="absolute top-0 left-1/4 h-96 w-96 -translate-x-1/2 rounded-full bg-primary/5 blur-3xl" />
+      <div className="absolute bottom-0 right-1/4 h-80 w-80 translate-x-1/2 rounded-full bg-accent/5 blur-3xl" />
       <div className="container mx-auto flex max-w-2xl flex-1 flex-col gap-4 p-4">
-        <div className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-all duration-300">
+        <div className="flex flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-card transition-all duration-300 hover:shadow-card-hover">
           <AssistantAvatarHeader agent={agent} />
 
           <div className="flex flex-1 flex-col overflow-hidden">
@@ -222,6 +282,12 @@ export function AgentPublicChatVisitorViewPage() {
                   <ChatWindow
                     messages={messages}
                     isTyping={isTyping}
+                    agentName={agent.name}
+                    welcomeMessage={
+                      agent.productHint
+                        ? `Hi! I'm ${agent.name}. ${agent.productHint} Let's get started.`
+                        : `Hi! I'm ${agent.name}. How can I help you today?`
+                    }
                   />
                 </div>
 
@@ -239,7 +305,7 @@ export function AgentPublicChatVisitorViewPage() {
                       completedSteps={fields.length - sessionState.remainingFields.length}
                     />
                   )}
-                  <SessionStatePanel sessionState={sessionState} />
+                  <SessionStatePanel sessionState={sessionState} fields={fields} />
                   <SendButtonSmartPrompts
                     smartPrompts={smartPrompts}
                     onSelectPrompt={(t) => handleSend(t)}
@@ -266,3 +332,5 @@ export function AgentPublicChatVisitorViewPage() {
     </div>
   )
 }
+
+export default AgentPublicChatVisitorViewPage
