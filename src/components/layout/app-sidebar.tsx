@@ -88,17 +88,17 @@ export function AppSidebar({ mobileOpen = false, setMobileOpen = () => {} }: App
       </nav>
       <div className="border-t border-border p-2">
         <Link
-          to="/dashboard/profile"
+          to="/dashboard/user-profile"
           onClick={() => setMobileOpen(false)}
           className={cn(
             'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
-            location.pathname === '/dashboard/profile'
+            location.pathname === '/dashboard/user-profile'
               ? 'bg-primary text-primary-foreground'
               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
           )}
         >
           <User className="h-5 w-5 shrink-0" />
-          <span>Profile</span>
+          <span>Account</span>
         </Link>
       </div>
     </>

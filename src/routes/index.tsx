@@ -17,7 +17,9 @@ import { IntegrationsPage } from '@/pages/dashboard/integrations'
 import { ContentPage } from '@/pages/dashboard/content'
 import { SettingsPage } from '@/pages/dashboard/settings'
 import { ProfilePage } from '@/pages/dashboard/profile'
+import { UserProfilePage } from '@/pages/UserProfile'
 import { PublicChatPage } from '@/pages/chat'
+import { AgentPublicChatVisitorViewPage } from '@/pages/AgentPublicChatVisitorView'
 import { PricingPage } from '@/pages/pricing'
 import { AboutPage } from '@/pages/about'
 import { NotFoundPage } from '@/pages/not-found'
@@ -35,6 +37,8 @@ export const router = createBrowserRouter([
       { path: 'pricing', element: <PricingPage /> },
       { path: 'about', element: <AboutPage /> },
       { path: 'chat/:agentId', element: <PublicChatPage /> },
+      { path: 'agent-public-chat-visitor-view', element: <AgentPublicChatVisitorViewPage /> },
+      { path: 'agent-public-chat-visitor-view/:agentId', element: <AgentPublicChatVisitorViewPage /> },
     ],
   },
   {
@@ -51,6 +55,7 @@ export const router = createBrowserRouter([
       { path: 'content', element: <ContentPage /> },
       { path: 'settings', element: <SettingsPage /> },
       { path: 'profile', element: <ProfilePage /> },
+      { path: 'user-profile', element: <UserProfilePage /> },
     ],
   },
   { path: '/404', element: <NotFoundPage /> },

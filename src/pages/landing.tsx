@@ -32,7 +32,7 @@ export function LandingPage() {
                   Start building free
                 </Button>
               </Link>
-              <Link to="/chat/demo">
+              <Link to="/agent-public-chat-visitor-view/demo">
                 <Button variant="outline" size="lg" className="min-w-[180px]">
                   Try live demo
                 </Button>

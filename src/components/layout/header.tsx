@@ -18,6 +18,12 @@ export function Header({ variant = 'landing' }: HeaderProps) {
           {variant === 'landing' && (
             <>
               <Link
+                to="/agent-public-chat-visitor-view/demo"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Try demo
+              </Link>
+              <Link
                 to="/pricing"
                 className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
